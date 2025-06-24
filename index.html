@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>课程表 - 2024年春季学期</title>
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+		}
+
+		body {
+			font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+			background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+			min-height: 100vh;
+			padding: 20px;
+		}
+
+		.container {
+			max-width: 1200px;
+			margin: 0 auto;
+			background: rgba(255, 255, 255, 0.95);
+			border-radius: 20px;
+			box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+			overflow: hidden;
+			backdrop-filter: blur(10px);
+		}
+
+		.header {
+			background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+			color: white;
+			padding: 30px;
+			text-align: center;
+		}
+
+		.header h1 {
+			font-size: 2.5rem;
+			margin-bottom: 10px;
+			font-weight: 300;
+		}
+
+		.header p {
+			font-size: 1.1rem;
+			opacity: 0.9;
+		}
+
+		.schedule-container {
+			padding: 30px;
+		}
+
+		.time-slots {
+			display: grid;
+			grid-template-columns: 80px repeat(7, 1fr);
+			gap: 2px;
+			background: #f8f9fa;
+			border-radius: 15px;
+			overflow: hidden;
+			box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+		}
+
+		.time-header,
+		.day-header {
+			background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+			color: white;
+			padding: 15px 10px;
+			text-align: center;
+			font-weight: 600;
+			font-size: 0.9rem;
+		}
+
+		.day-header {
+			font-size: 1rem;
+		}
+
+		.time-slot {
+			background: white;
+			padding: 10px 5px;
+			text-align: center;
+			font-size: 0.8rem;
+			color: #666;
+			border-bottom: 1px solid #eee;
+		}
+
+		.course-cell {
+			background: white;
+			padding: 15px 10px;
+			text-align: center;
+			border-bottom: 1px solid #eee;
+			cursor: pointer;
+			transition: all 0.3s ease;
+			position: relative;
+			min-height: 80px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+
+		.course-cell:hover {
+			background: #f8f9fa;
+			transform: translateY(-2px);
+			box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+		}
+
+		.course {
+			background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+			color: white;
+			padding: 8px 12px;
+			border-radius: 8px;
+			font-size: 0.8rem;
+			font-weight: 500;
+			box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+			transition: all 0.3s ease;
+		}
+
+		.course:hover {
+			transform: scale(1.05);
+			box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+		}
+
+		.course.programming {
+			background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+			box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
+		}
+
+		.course.security {
+			background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
+			box-shadow: 0 2px 8px rgba(78, 205, 196, 0.3);
+		}
+
+		.course.malware {
+			background: linear-gradient(135deg, #a8e6cf 0%, #7fcdcd 100%);
+			box-shadow: 0 2px 8px rgba(168, 230, 207, 0.3);
+		}
+
+		.course.cyber {
+			background: linear-gradient(135deg, #ffd93d 0%, #ff6b6b 100%);
+			box-shadow: 0 2px 8px rgba(255, 217, 61, 0.3);
+		}
+
+		.modal {
+			display: none;
+			position: fixed;
+			z-index: 1000;
+			left: 0;
+			top: 0;
+			width: 100%;
+			height: 100%;
+			background-color: rgba(0, 0, 0, 0.5);
+			backdrop-filter: blur(5px);
+			animation: fadeIn 0.3s ease;
+		}
+
+		.modal.show {
+			display: block !important;
+		}
+
+		@keyframes fadeIn {
+			from {
+				opacity: 0;
+			}
+
+			to {
+				opacity: 1;
+			}
+		}
+
+		.modal-content {
+			background: white;
+			margin: 10% auto;
+			padding: 30px;
+			border-radius: 20px;
+			width: 90%;
+			max-width: 500px;
+			box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+			position: relative;
+			animation: slideIn 0.3s ease;
+		}
+
+		@keyframes slideIn {
+			from {
+				transform: translateY(-50px);
+				opacity: 0;
+			}
+
+			to {
+				transform: translateY(0);
+				opacity: 1;
+			}
+		}
+
+		.close {
+			position: absolute;
+			right: 20px;
+			top: 20px;
+			font-size: 28px;
+			font-weight: bold;
+			color: #aaa;
+			cursor: pointer;
+			transition: color 0.3s ease;
+		}
+
+		.close:hover {
+			color: #000;
+		}
+
+		.course-details {
+			margin-top: 20px;
+		}
+
+		.course-details h3 {
+			color: #667eea;
+			margin-bottom: 15px;
+			font-size: 1.5rem;
+		}
+
+		.detail-item {
+			display: flex;
+			justify-content: space-between;
+			padding: 10px 0;
+			border-bottom: 1px solid #eee;
+		}
+
+		.detail-label {
+			font-weight: 600;
+			color: #666;
+		}
+
+		.detail-value {
+			color: #333;
+		}
+
+		.legend {
+			margin-top: 30px;
+			padding: 20px;
+			background: #f8f9fa;
+			border-radius: 15px;
+		}
+
+		.legend h3 {
+			margin-bottom: 15px;
+			color: #333;
+		}
+
+		.legend-items {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 15px;
+		}
+
+		.legend-item {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+		}
+
+		.legend-color {
+			width: 20px;
+			height: 20px;
+			border-radius: 4px;
+		}
+
+		@media (max-width: 768px) {
+			.schedule-container {
+				padding: 15px;
+			}
+
+			.time-slots {
+				grid-template-columns: 60px repeat(7, 1fr);
+				font-size: 0.7rem;
+			}
+
+			.course {
+				font-size: 0.7rem;
+				padding: 6px 8px;
+			}
+
+			.header h1 {
+				font-size: 2rem;
+			}
+		}
+	</style>
+</head>
+
+<body>
+	<div class="container">
+		<div class="header">
+			<h1>📚 课程表</h1>
+		</div>
+
+		<div class="schedule-container">
+			<div class="time-slots">
+				<!-- 时间列标题 -->
+				<div class="time-header">时间</div>
+				<div class="day-header">周一</div>
+				<div class="day-header">周二</div>
+				<div class="day-header">周三</div>
+				<div class="day-header">周四</div>
+				<div class="day-header">周五</div>
+				<div class="day-header">周六</div>
+				<div class="day-header">周日</div>
+
+				<!-- 时间段 -->
+				<div class="time-slot">09:00</div>
+				<div class="course-cell"></div>
+				<div class="course-cell"></div>
+				<div class="course-cell"></div>
+				<div class="course-cell"></div>
+				<div class="course-cell">
+					<div class="course programming">编程工具和技术<br>09:00-12:00<br>R.G.07</div>
+				</div>
+				<div class="course-cell"></div>
+				<div class="course-cell"></div>
+
+				<div class="time-slot">10:00</div>
+				<div class="course-cell">
+					<div class="course security">安全云应用工程<br>10:00-11:00<br>L.G.03</div>
+				</div>
+				<div class="course-cell"></div>
+				<div class="course-cell"></div>
+				<div class="course-cell"></div>
+				<div class="course-cell"></div>
+				<div class="course-cell"></div>
+				<div class="course-cell"></div>
+
+				<div class="time-slot">11:00</div>
+				<div class="course-cell">
+					<div class="course programming">编程工具和技术<br>11:00-14:00<br>R.G.06</div>
+				</div>
+				<div class="course-cell"></div>
+				<div class="course-cell"></div>
+				<div class="course-cell">
+					<div class="course security">安全云应用工程<br>11:00-12:00<br>L.G.05</div>
+				</div>
+				<div class="course-cell"></div>
+				<div class="course-cell"></div>
+				<div class="course-cell"></div>
+
+				<div class="time-slot">12:00</div>
+				<div class="course-cell"></div>
+				<div class="course-cell">
+					<div class="course malware">恶意软件分析<br>12:00-13:00<br>MSB.1.01</div>
+				</div>
+				<div class="course-cell"></div>
+				<div class="course-cell"></div>
+				<div class="course-cell"></div>
+				<div class="course-cell"></div>
+				<div class="course-cell"></div>
+
+				<div class="time-slot">13:00</div>
+				<div class="course-cell"></div>
+				<div class="course-cell"></div>
+				<div class="course-cell"></div>
+				<div class="course-cell">
+					<div class="course malware">恶意软件分析<br>13:00-14:00<br>L.G.03</div>
+				</div>
+				<div class="course-cell"></div>
+				<div class="course-cell"></div>
+				<div class="course-cell"></div>
+
+				<div class="time-slot">14:00</div>
+				<div class="course-cell"></div>
+				<div class="course-cell"></div>
+				<div class="course-cell"></div>
+				<div class="course-cell"></div>
+				<div class="course-cell"></div>
+				<div class="course-cell"></div>
+				<div class="course-cell"></div>
+
+				<div class="time-slot">15:00</div>
+				<div class="course-cell"></div>
+				<div class="course-cell">
+					<div class="course cyber">高级网络安全<br>15:00-17:00<br>S.G.01</div>
+				</div>
+				<div class="course-cell"></div>
+				<div class="course-cell"></div>
+				<div class="course-cell"></div>
+				<div class="course-cell"></div>
+				<div class="course-cell"></div>
+			</div>
+
+			<div class="legend">
+				<h3>📋 课程图例</h3>
+				<div class="legend-items">
+					<div class="legend-item">
+						<div class="legend-color" style="background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);"></div>
+						<span>编程工具和技术</span>
+					</div>
+					<div class="legend-item">
+						<div class="legend-color" style="background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);"></div>
+						<span>安全云应用工程</span>
+					</div>
+					<div class="legend-item">
+						<div class="legend-color" style="background: linear-gradient(135deg, #a8e6cf 0%, #7fcdcd 100%);"></div>
+						<span>恶意软件分析</span>
+					</div>
+					<div class="legend-item">
+						<div class="legend-color" style="background: linear-gradient(135deg, #ffd93d 0%, #ff6b6b 100%);"></div>
+						<span>高级网络安全</span>
+					</div>
+				</div>
+			</div>
+
+			<!-- 测试按钮 -->
+			<div style="text-align: center; margin-top: 20px;">
+				<button id="testModal"
+					style="padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer;">测试弹窗</button>
+			</div>
+		</div>
+	</div>
+
+	<!-- 课程详情弹窗 -->
+	<div id="courseModal" class="modal">
+		<div class="modal-content">
+			<span class="close">&times;</span>
+			<div class="course-details">
+				<h3 id="modalCourseName"></h3>
+				<div id="modalCourseDetails"></div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		// 等待DOM完全加载后再执行脚本
+		document.addEventListener('DOMContentLoaded', function () {
+			// 课程数据
+			const courseData = {
+				'编程工具和技术': {
+					type: 'programming',
+					lectures: [
+						{ day: '周一', time: '11:00-14:00', room: 'R.G.06' },
+						{ day: '周五', time: '09:00-12:00', room: 'R.G.07' }
+					],
+					description: '学习现代编程工具和技术，包括版本控制、调试工具、IDE使用等。'
+				},
+				'安全云应用工程': {
+					type: 'security',
+					lectures: [
+						{ day: '周一', time: '10:00-11:00', room: 'L.G.03' },
+						{ day: '周四', time: '11:00-12:00', room: 'L.G.05' }
+					],
+					description: '深入探讨云安全架构、安全设计和云应用开发最佳实践。'
+				},
+				'恶意软件分析': {
+					type: 'malware',
+					lectures: [
+						{ day: '周二', time: '12:00-13:00', room: 'MSB.1.01' },
+						{ day: '周四', time: '13:00-14:00', room: 'L.G.03' }
+					],
+					description: '学习恶意软件分析技术，包括静态分析、动态分析和逆向工程。'
+				},
+				'高级网络安全': {
+					type: 'cyber',
+					lectures: [
+						{ day: '周二', time: '15:00-17:00', room: 'S.G.01' }
+					],
+					description: '高级网络安全概念，包括渗透测试、安全评估和威胁建模。'
+				}
+			};
+
+			// 获取DOM元素
+			const modal = document.getElementById('courseModal');
+			const modalCourseName = document.getElementById('modalCourseName');
+			const modalCourseDetails = document.getElementById('modalCourseDetails');
+			const closeBtn = document.querySelector('.close');
+
+			// 为所有课程单元格添加点击事件
+			document.querySelectorAll('.course').forEach(course => {
+				course.addEventListener('click', function (e) {
+					e.stopPropagation();
+					// 修复课程名称提取 - 处理HTML中的<br>标签
+					const courseHTML = this.innerHTML;
+					const courseName = courseHTML.split('<br>')[0].trim();
+					showCourseDetails(courseName);
+				});
+			});
+
+			// 显示课程详情
+			function showCourseDetails(courseName) {
+				const course = courseData[courseName];
+				if (course) {
+					modalCourseName.textContent = courseName;
+
+					let detailsHTML = `
+						<div class="detail-item">
+							<span class="detail-label">课程描述：</span>
+							<span class="detail-value">${course.description}</span>
+						</div>
+					`;
+
+					course.lectures.forEach((lecture, index) => {
+						detailsHTML += `
+							<div class="detail-item">
+								<span class="detail-label">课程 ${index + 1}：</span>
+								<span class="detail-value">${lecture.day} ${lecture.time} (${lecture.room})</span>
+							</div>
+						`;
+					});
+
+					modalCourseDetails.innerHTML = detailsHTML;
+					modal.classList.add('show');
+				}
+			}
+
+			// 关闭弹窗
+			closeBtn.onclick = function () {
+				modal.classList.remove('show');
+			}
+
+			// 点击弹窗外部关闭
+			window.onclick = function (event) {
+				if (event.target == modal) {
+					modal.classList.remove('show');
+				}
+			}
+
+			// 添加键盘事件支持
+			document.addEventListener('keydown', function (event) {
+				if (event.key === 'Escape' && modal.classList.contains('show')) {
+					modal.classList.remove('show');
+				}
+			});
+
+			// 测试按钮事件
+			document.getElementById('testModal').addEventListener('click', function () {
+				modalCourseName.textContent = '测试课程';
+				modalCourseDetails.innerHTML = '<div class="detail-item"><span class="detail-label">测试：</span><span class="detail-value">这是一个测试弹窗</span></div>';
+				modal.classList.add('show');
+			});
+		});
+	</script>
+</body>
+
+</html>

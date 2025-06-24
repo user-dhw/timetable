@@ -53,7 +53,7 @@
 
 		.time-slots {
 			display: grid;
-			grid-template-columns: 80px repeat(7, 1fr);
+			grid-template-columns: 80px repeat(5, 1fr);
 			gap: 2px;
 			background: #f8f9fa;
 			border-radius: 15px;
@@ -263,22 +263,126 @@
 		}
 
 		@media (max-width: 768px) {
+			body {
+				padding: 10px;
+			}
+
+			.container {
+				margin: 0;
+				border-radius: 15px;
+			}
+
+			.header {
+				padding: 20px 15px;
+			}
+
+			.header h1 {
+				font-size: 1.8rem;
+				margin-bottom: 5px;
+			}
+
+			.header p {
+				font-size: 1rem;
+			}
+
 			.schedule-container {
 				padding: 15px;
 			}
 
 			.time-slots {
-				grid-template-columns: 60px repeat(7, 1fr);
+				grid-template-columns: 50px repeat(5, 1fr);
+				gap: 1px;
+				font-size: 0.7rem;
+			}
+
+			.time-header,
+			.day-header {
+				padding: 8px 4px;
+				font-size: 0.8rem;
+			}
+
+			.time-slot {
+				padding: 6px 2px;
+				font-size: 0.7rem;
+			}
+
+			.course-cell {
+				padding: 8px 4px;
+				min-height: 60px;
+			}
+
+			.course {
+				font-size: 0.65rem;
+				padding: 4px 6px;
+				line-height: 1.2;
+			}
+
+			.legend {
+				margin-top: 20px;
+				padding: 15px;
+			}
+
+			.legend h3 {
+				font-size: 1rem;
+				margin-bottom: 10px;
+			}
+
+			.legend-items {
+				gap: 10px;
+			}
+
+			.legend-item {
+				font-size: 0.8rem;
+			}
+
+			.modal-content {
+				margin: 5% auto;
+				padding: 20px;
+				width: 95%;
+				max-width: none;
+			}
+
+			.course-details h3 {
+				font-size: 1.2rem;
+			}
+
+			.detail-item {
+				flex-direction: column;
+				align-items: flex-start;
+				gap: 5px;
+			}
+
+			.detail-label {
+				font-size: 0.9rem;
+			}
+
+			.detail-value {
+				font-size: 0.85rem;
+			}
+		}
+
+		@media (max-width: 480px) {
+			.time-slots {
+				grid-template-columns: 40px repeat(5, 1fr);
+			}
+
+			.time-header,
+			.day-header {
+				padding: 6px 2px;
 				font-size: 0.7rem;
 			}
 
 			.course {
-				font-size: 0.7rem;
-				padding: 6px 8px;
+				font-size: 0.6rem;
+				padding: 3px 4px;
 			}
 
 			.header h1 {
-				font-size: 2rem;
+				font-size: 1.5rem;
+			}
+
+			.header p {
+				font-size: 0.9rem;
 			}
 		}
 	</style>
@@ -299,8 +403,6 @@
 				<div class="day-header">周三</div>
 				<div class="day-header">周四</div>
 				<div class="day-header">周五</div>
-				<div class="day-header">周六</div>
-				<div class="day-header">周日</div>
 
 				<!-- 时间段 -->
 				<div class="time-slot">09:00</div>
@@ -311,15 +413,11 @@
 				<div class="course-cell">
 					<div class="course programming">编程工具和技术<br>09:00-12:00<br>R.G.07</div>
 				</div>
-				<div class="course-cell"></div>
-				<div class="course-cell"></div>
 
 				<div class="time-slot">10:00</div>
 				<div class="course-cell">
 					<div class="course security">安全云应用工程<br>10:00-11:00<br>L.G.03</div>
 				</div>
-				<div class="course-cell"></div>
-				<div class="course-cell"></div>
 				<div class="course-cell"></div>
 				<div class="course-cell"></div>
 				<div class="course-cell"></div>
@@ -335,16 +433,12 @@
 					<div class="course security">安全云应用工程<br>11:00-12:00<br>L.G.05</div>
 				</div>
 				<div class="course-cell"></div>
-				<div class="course-cell"></div>
-				<div class="course-cell"></div>
 
 				<div class="time-slot">12:00</div>
 				<div class="course-cell"></div>
 				<div class="course-cell">
 					<div class="course malware">恶意软件分析<br>12:00-13:00<br>MSB.1.01</div>
 				</div>
-				<div class="course-cell"></div>
-				<div class="course-cell"></div>
 				<div class="course-cell"></div>
 				<div class="course-cell"></div>
 				<div class="course-cell"></div>
@@ -357,12 +451,8 @@
 					<div class="course malware">恶意软件分析<br>13:00-14:00<br>L.G.03</div>
 				</div>
 				<div class="course-cell"></div>
-				<div class="course-cell"></div>
-				<div class="course-cell"></div>
 
 				<div class="time-slot">14:00</div>
-				<div class="course-cell"></div>
-				<div class="course-cell"></div>
 				<div class="course-cell"></div>
 				<div class="course-cell"></div>
 				<div class="course-cell"></div>
@@ -374,8 +464,6 @@
 				<div class="course-cell">
 					<div class="course cyber">高级网络安全<br>15:00-17:00<br>S.G.01</div>
 				</div>
-				<div class="course-cell"></div>
-				<div class="course-cell"></div>
 				<div class="course-cell"></div>
 				<div class="course-cell"></div>
 				<div class="course-cell"></div>
@@ -406,7 +494,7 @@
 			<!-- 测试按钮 -->
 			<div style="text-align: center; margin-top: 20px;">
 				<button id="testModal"
-					style="padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer;">测试弹窗</button>
+					style="padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 14px;">测试弹窗</button>
 			</div>
 		</div>
 	</div>
@@ -526,7 +614,7 @@
 			// 测试按钮事件
 			document.getElementById('testModal').addEventListener('click', function () {
 				modalCourseName.textContent = '测试课程';
-				modalCourseDetails.innerHTML = '<div class="detail-item"><span class="detail-label">测试：</span><span class="detail-value">这是一个测试弹窗</span></div>';
+				modalCourseDetails.innerHTML = '<div class="detail-item"><span class="detail-label">别点了点了也得上课</span></div>';
 				modal.classList.add('show');
 			});
 		});
